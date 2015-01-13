@@ -1,0 +1,1317 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"cl",
+				"className"
+			],
+			[
+				"log",
+				"logItem"
+			],
+			[
+				"Log",
+				"LogItem"
+			],
+			[
+				"pad",
+				"padding-bottom"
+			],
+			[
+				"padd",
+				"padding-top"
+			],
+			[
+				"marg",
+				"margin-bottom"
+			],
+			[
+				"tex",
+				"text-align"
+			],
+			[
+				"ali",
+				"text-align"
+			],
+			[
+				"slid",
+				"slideRight"
+			],
+			[
+				"mar",
+				"mr-a	margin-right: auto;"
+			],
+			[
+				"wid",
+				"width"
+			],
+			[
+				"cla",
+				"classInfo"
+			],
+			[
+				"clas",
+				"className"
+			],
+			[
+				"fun",
+				"function"
+			],
+			[
+				"inlin",
+				"inline-block"
+			],
+			[
+				"hei",
+				"height:   (property)"
+			],
+			[
+				"margi",
+				"margin-left"
+			],
+			[
+				"da",
+				"dateRange"
+			],
+			[
+				"get",
+				"getBadThings"
+			],
+			[
+				"lo",
+				"logs"
+			],
+			[
+				"sr",
+				"src=  (attribute)"
+			],
+			[
+				"queryBuil",
+				"QueryBuilderDirective"
+			],
+			[
+				"ty",
+				"type=  (attribute)"
+			],
+			[
+				"prod",
+				"productName"
+			],
+			[
+				"email",
+				"emailBody"
+			],
+			[
+				"emai",
+				"emailBody"
+			],
+			[
+				"req",
+				"requestDetails"
+			],
+			[
+				"order",
+				"orderEntry"
+			],
+			[
+				"ap",
+				"api_key"
+			],
+			[
+				"send",
+				"sendInvoice"
+			],
+			[
+				"item",
+				"itemNumber"
+			],
+			[
+				"produ",
+				"productFactory"
+			],
+			[
+				"t",
+				"target	Attr"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "index.html",
+			"settings":
+			{
+				"buffer_size": 1061,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/app.js",
+			"settings":
+			{
+				"buffer_size": 2059,
+				"line_ending": "Unix",
+				"name": "var Box = React.createClass({"
+			}
+		},
+		{
+			"contents": "/**\n * This file provided by Facebook is for non-commercial testing and evaluation purposes only.\n * Facebook reserves all rights not expressly granted.\n *\n * THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL\n * FACEBOOK BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN\n * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION\n * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.\n */\n\nvar converter = new Showdown.converter();\n\nvar Comment = React.createClass({\n  render: function() {\n    var rawMarkup = converter.makeHtml(this.props.children.toString());\n    return (\n      <div className=\"comment\">\n        <h2 className=\"commentAuthor\">\n          {this.props.author}\n        </h2>\n        <span dangerouslySetInnerHTML={{__html: rawMarkup}} />\n      </div>\n    );\n  }\n});\n\nvar CommentBox = React.createClass({\n  loadCommentsFromServer: function() {\n    $.ajax({\n      url: this.props.url,\n      dataType: 'json',\n      success: function(data) {\n        this.setState({data: data});\n      }.bind(this),\n      error: function(xhr, status, err) {\n        console.error(this.props.url, status, err.toString());\n      }.bind(this)\n    });\n  },\n  handleCommentSubmit: function(comment) {\n    var comments = this.state.data;\n    comments.push(comment);\n    this.setState({data: comments}, function() {\n      // `setState` accepts a callback. To avoid (improbable) race condition,\n      // `we'll send the ajax request right after we optimistically set the new\n      // `state.\n      $.ajax({\n        url: this.props.url,\n        dataType: 'json',\n        type: 'POST',\n        data: comment,\n        success: function(data) {\n          this.setState({data: data});\n        }.bind(this),\n        error: function(xhr, status, err) {\n          console.error(this.props.url, status, err.toString());\n        }.bind(this)\n      });\n    });\n  },\n  getInitialState: function() {\n    return {data: []};\n  },\n  componentDidMount: function() {\n    this.loadCommentsFromServer();\n    setInterval(this.loadCommentsFromServer, this.props.pollInterval);\n  },\n  render: function() {\n    return (\n      <div className=\"commentBox\">\n        <h1>Comments</h1>\n        <CommentList data={this.state.data} />\n        <CommentForm onCommentSubmit={this.handleCommentSubmit} />\n      </div>\n    );\n  }\n});\n\nvar CommentList = React.createClass({\n  render: function() {\n    var commentNodes = this.props.data.map(function(comment, index) {\n      return (\n        // `key` is a React-specific concept and is not mandatory for the\n        // purpose of this tutorial. if you're curious, see more here:\n        // http://facebook.github.io/react/docs/multiple-components.html#dynamic-children\n        <Comment author={comment.author} key={index}>\n          {comment.text}\n        </Comment>\n      );\n    });\n    return (\n      <div className=\"commentList\">\n        {commentNodes}\n      </div>\n    );\n  }\n});\n\nvar CommentForm = React.createClass({\n  handleSubmit: function(e) {\n    e.preventDefault();\n    var author = this.refs.author.getDOMNode().value.trim();\n    var text = this.refs.text.getDOMNode().value.trim();\n    if (!text || !author) {\n      return;\n    }\n    this.props.onCommentSubmit({author: author, text: text});\n    this.refs.author.getDOMNode().value = '';\n    this.refs.text.getDOMNode().value = '';\n    return;\n  },\n  render: function() {\n    return (\n      <form className=\"commentForm\" onSubmit={this.handleSubmit}>\n        <input type=\"text\" placeholder=\"Your name\" ref=\"author\" />\n        <input type=\"text\" placeholder=\"Say something...\" ref=\"text\" />\n        <input type=\"submit\" value=\"Post\" />\n      </form>\n    );\n  }\n});\n\nReact.render(\n  <CommentBox url=\"comments.json\" pollInterval={2000} />,\n  document.getElementById('content')\n);",
+			"settings":
+			{
+				"buffer_size": 3964,
+				"line_ending": "Unix",
+				"name": "/**"
+			}
+		}
+	],
+	"build_system": "Packages/Kulture/ASP.NET.sublime-build",
+	"command_palette":
+	{
+		"height": 127.0,
+		"selected_items":
+		[
+			[
+				"javas",
+				"Set Syntax: JavaScript"
+			],
+			[
+				"c#",
+				"Set Syntax: C#"
+			],
+			[
+				"html",
+				"Set Syntax: HTML"
+			],
+			[
+				"inst",
+				"Package Control: Install Package"
+			],
+			[
+				"set",
+				"Set Syntax: HTML"
+			],
+			[
+				"instal",
+				"Package Control: Install Package"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"insta",
+				"Package Control: Install Package"
+			],
+			[
+				"install ",
+				"Package Control: Install Package"
+			],
+			[
+				"javasc",
+				"Set Syntax: JavaScript"
+			],
+			[
+				"side",
+				"View: Toggle Side Bar"
+			],
+			[
+				"stat",
+				"View: Toggle Status Bar"
+			],
+			[
+				"syntax: javasc",
+				"Set Syntax: JavaScript"
+			],
+			[
+				"syntax: htm",
+				"Set Syntax: HTML"
+			],
+			[
+				"pack",
+				"Preferences: Browse Packages"
+			],
+			[
+				"disc",
+				"Package Control: Discover Packages"
+			],
+			[
+				"java",
+				"Set Syntax: JavaScript"
+			],
+			[
+				"pret",
+				"HTMLPrettify"
+			],
+			[
+				"set syntax:j",
+				"Set Syntax: JavaScript"
+			],
+			[
+				"set syntax:h",
+				"Set Syntax: HTML"
+			],
+			[
+				"discover",
+				"Package Control: Discover Packages"
+			],
+			[
+				"em",
+				"Emmet: Wrap With Abbreviation"
+			],
+			[
+				"linter",
+				"SublimeLinter: Lint This View"
+			],
+			[
+				"jsh",
+				"JSHint"
+			],
+			[
+				"prett",
+				"HTMLPrettify"
+			],
+			[
+				"brack",
+				"BracketHighlighter: Toggle Global Enable"
+			],
+			[
+				"ins",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 521.0
+	},
+	"console":
+	{
+		"height": 271.0,
+		"history":
+		[
+			"import urllib.request,os,hashlib; h = '7183a2d3e96f11eeadd761d777e62404' + 'e330c659d4bb41d3bdf022e94cab3cd0'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)",
+			"import urllib.request,os,hashlib; h = '7183a2d3e96f11eeadd761d777e62404' + 'e330c659d4bb41d3bdf022e94cab3cd0'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://sublime.wbond.net/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)",
+			"pwd",
+			"ionic serve",
+			"ls",
+			"import urllib.request,os; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); open(os.path.join(ipp, pf), 'wb').write(urllib.request.urlopen( 'http://sublime.wbond.net/' + pf.replace(' ','%20')).read())"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/Users/miguel/code/work/apex/PulseReactPrototype",
+		"/Users/miguel/code/work/apex/PulseReactPrototype/src"
+	],
+	"file_history":
+	[
+		"/Users/miguel/Library/Application Support/Sublime Text 3/Packages/User/Preferences.sublime-settings",
+		"/Users/miguel/Library/Application Support/Sublime Text 3/Packages/Default/Preferences.sublime-settings",
+		"/Users/miguel/code/tutorials/ReactCommentSystem/template.html",
+		"/Users/miguel/code/tutorials/React/source.js",
+		"/Users/miguel/code/tutorials/React/ReactTutorial.html",
+		"/Users/miguel/code/work/apex/radar.web/Radar.Silverlight/Views/AssetBook/AccountsTab/float_AccDetails.xaml.cs",
+		"/Users/miguel/code/work/apex/radar.web/Radar.Silverlight/Views/AssetBook/HouseHoldTab/float_GroupDetails.xaml.cs",
+		"/Users/miguel/code/work/apex/radar.web/Radar.Silverlight/Views/AssetBook/AdminstrationTab/AdvisorTab/float_AdvisorDetails.xaml.cs",
+		"/Users/miguel/code/work/apex/radar.web/Radar.Silverlight/Helper/ReportRequestDto.cs",
+		"/Users/miguel/code/work/apex/radar.web/Radar.Web/ReportPDF/ReportPackagePDF.aspx",
+		"/Users/miguel/code/work/apex/radar.web/.git/MERGE_MSG",
+		"/Users/miguel/code/work/apex/radar.web/Radar.Web/ReportPDF/ReportPackagePDF-test.html",
+		"/Users/miguel/code/work/apex/radar.web/Radar.Silverlight.Controls.ProgressBar/Bin/Debug/PortfolioInsightTestPage.html",
+		"/Users/miguel/code/work/apex/radar.web/Radar.Silverlight/Helper/MyTreeView.cs",
+		"/Users/miguel/code/work/apex/radar.web/Radar.Silverlight/HierarchyPage.xaml",
+		"/Users/miguel/code/work/apex/radar.web/Radar.Web/ReportPDF/ReportPackagePDF.aspx.cs",
+		"/Users/miguel/code/work/apex/radar.web/Radar.Web/ReportPDF/BinaryPdfRepository.cs",
+		"/Users/miguel/code/work/apex/radar.web/Radar.Web/ReportPDF/PdfOutputHandler.cs",
+		"/Users/miguel/code/work/apex/radar.web/Radar.Silverlight/Views/AssetBook/PortfolioTab/PorfolioDetailsTab/Portfolio Details.xaml",
+		"/Users/miguel/code/work/apex/radar.web/Radar.Silverlight/packages.config",
+		"/Users/miguel/code/work/apex/radar.web/Radar.Silverlight/Views/AssetBook/AccountsTab/NewAccountTab/PositionsAccount.xaml",
+		"/Users/miguel/code/work/apex/RadarAllTheThings/Radar.Frontend/src/app/app.module.js",
+		"/Users/miguel/code/work/apex/RadarAllTheThings/Radar.Frontend.OLD/app/index.html",
+		"/Users/miguel/code/work/apex/Apex.Pulse/Web/src/app/app.config.js",
+		"/Users/miguel/code/work/apex/RadarAllTheThings/Radar.Frontend/package.json",
+		"/Users/miguel/code/work/apex/radar.web/Radar.Web/Scripts/pure-min.css",
+		"/Users/miguel/code/work/apex/radar.web/Radar.Silverlight/Helper/CustomDatePicker/CustomPopUpCalender.xaml",
+		"/Users/miguel/code/work/apex/radar.web/Radar.Web/Silverlight.js",
+		"/Users/miguel/code/work/apex/radar.web/Radar.Web/Service1Client.cs",
+		"/Users/miguel/code/work/apex/radar.web/Radar.Web/Properties/Settings.settings",
+		"/Users/miguel/code/work/apex/radar.web/Radar.Web/ReportPDF/ReportParams.cs",
+		"/Users/miguel/code/work/apex/radar.web/Radar.Silverlight/Helper/Reporttreeviewadding.cs",
+		"/Users/miguel/code/work/apex/radar.web/Radar.Silverlight/Helper/RefreshEventArgs.cs",
+		"/Users/miguel/code/work/apex/radar.web/Radar.Web.sln",
+		"/Users/miguel/.gitconfig",
+		"/Users/miguel/code/work/apex/Apex.Pulse/UI/src/components/navbar/navbar.html",
+		"/Users/miguel/code/work/apex/Apex.Pulse/UI/src/index.html",
+		"/Users/miguel/code/work/apex/Apex.Pulse/UI/node_modules/protractor/testapp/app.css",
+		"/Users/miguel/code/work/apex/Apex.Pulse/UI/node_modules/gulp-cache/node_modules/lodash-node/compat/internals/arrayPool.js",
+		"/Users/miguel/code/work/apex/Apex.Pulse/UI/bower_components/angular/angular.js",
+		"/Users/miguel/code/work/apex/Apex.Pulse/UI/node_modules/gulp-ng-annotate/COPYING",
+		"/Users/miguel/code/work/apex/Apex.Pulse/UI/bower_components/modernizr/feature-detects/css-objectfit.js",
+		"/Users/miguel/code/work/apex/Apex.Pulse/UI/bower_components/bootstrap-sass-official/CONTRIBUTING.md",
+		"/Users/miguel/code/work/apex/Apex.Pulse/UI/node_modules/protractor/example/conf.js",
+		"/Users/miguel/code/work/apex/Apex.Pulse/UI/node_modules/browser-sync/lib/config.js",
+		"/Users/miguel/code/work/apex/Apex.Pulse/UI/src/app/app.module.js",
+		"/Users/miguel/code/work/apex/Apex.Pulse/UI/src/app/index.js",
+		"/Users/miguel/code/work/apex/Apex.Pulse/UI/src/app/app.config.js",
+		"/Users/miguel/code/work/apex/Apex.Pulse/UI/node_modules/gulp-karma/node_modules/optimist/example/line_count_options.js",
+		"/Users/miguel/code/work/apex/Apex.Pulse/UI/bower_components/bootstrap-sass-official/LICENSE",
+		"/Users/miguel/code/work/apex/Apex.Pulse/UI/node_modules/browser-sync/index.js",
+		"/Users/miguel/code/work/apex/Apex.Pulse/UI/.tmp/app/index.css",
+		"/Users/miguel/code/work/apex/Apex.Pulse/UI/node_modules/gulp/node_modules/gulp-util/lib/isNull.js",
+		"/Users/miguel/code/work/apex/Apex.Pulse/UI/npm-debug.log",
+		"/Users/miguel/code/work/apex/Apex.Pulse/UI/node_modules/browser-sync/node_modules/.bin/dev-ip",
+		"/Users/miguel/code/work/apex/Apex.Pulse/UI/node_modules/wiredep/node_modules/bower-config/node_modules/mout/object/deepMixIn.js",
+		"/Users/miguel/code/work/apex/Apex.Pulse/UI/src/app/logs/logs.html",
+		"/Users/miguel/code/work/apex/Apex.Pulse/UI/src/app/main/main.controller.js",
+		"/Users/miguel/code/work/apex/Apex.QueryLibrary/QueryBuilderUI/QueryBuilder/QueryBuilderPartial.html",
+		"/Users/miguel/code/work/apex/Apex.QueryLibrary/QueryBuilderUI/QueryBuilder/QueryBuilderDirective.js",
+		"/Users/miguel/code/work/apex/Apex.QueryLibrary/QueryBuilderUI/QueryBuilder/GroupBuilderDirective.js",
+		"/Users/miguel/code/work/apex/Apex.QueryLibrary/QueryBuilderUI/angular.min.js",
+		"/Users/miguel/code/work/apex/Apex.QueryLibrary/QueryBuilderUI/app.js",
+		"/Users/miguel/code/work/apex/Apex.QueryLibrary/QueryBuilderUI/angular.js",
+		"/Users/miguel/code/work/apex/Apex.QueryLibrary/QueryBuilderUI/QueryBuilder/GroupBuilderPartial.html",
+		"/Users/miguel/code/work/apex/Apex.QueryLibrary/QueryBuilderUI/QueryBuilderUI.sublime-project",
+		"/Users/miguel/code/work/mytinerarypro/www/templates/journal.html",
+		"/Users/miguel/code/work/mytinerarypro/www/templates/menu.html",
+		"/Users/miguel/code/work/mytinerarypro/www/templates/playlist.html",
+		"/Users/miguel/code/work/mytinerarypro/www/index.html",
+		"/Users/miguel/code/personal/Aphrodite/lib/controllers/invoice.js",
+		"/Users/miguel/code/personal/Acapella/app/index.html",
+		"/Users/miguel/code/personal/Acapella/app/scripts/factories/productFactory.js",
+		"/Users/miguel/code/personal/Acapella/app/scripts/controllers/orderController.js",
+		"/Users/miguel/code/personal/Acapella/app/scripts/controllers/orderSummaryController.js",
+		"/Users/miguel/code/personal/Acapella/Gruntfile.js",
+		"/Users/miguel/code/personal/Acapella/app/scripts/main.js",
+		"/Users/miguel/code/personal/Acapella/app/scripts/factories/orderEntry.js",
+		"/Users/miguel/code/personal/Acapella/package.json",
+		"/Users/miguel/code/personal/Acapella/bower.json",
+		"/Users/miguel/code/personal/tutorials/ngBoilerplate/Gruntfile.js",
+		"/Users/miguel/code/personal/tutorials/ngBoilerplate/build.config.js",
+		"/Users/miguel/code/personal/Aphrodite/FullStack/app/views/index.html",
+		"/Users/miguel/code/personal/Aphrodite/FullStack/app/views/index.jade",
+		"/Users/miguel/code/personal/Aphrodite/FullStack/lib/controllers/index.js",
+		"/Users/miguel/code/personal/Aphrodite/FullStack/lib/routes.js",
+		"/Users/miguel/code/personal/Aphrodite/FullStack/app/scripts/app.js",
+		"/Users/miguel/code/personal/Aphrodite/app/404.html",
+		"/Users/miguel/code/personal/Aphrodite/app/scripts/app.js",
+		"/Users/miguel/code/personal/Aphrodite/FullStack/server.js",
+		"/Users/miguel/code/personal/Aphrodite/app/scripts/controllers/orderController.js",
+		"/Users/miguel/code/personal/Aphrodite/FullStack/lib/controllers/invoice.js",
+		"/Users/miguel/code/personal/Aphrodite/FullStack/lib/config/express.js",
+		"/Users/miguel/code/personal/Aphrodite/app/server.js",
+		"/Users/miguel/code/personal/Aphrodite/Gruntfile.js",
+		"/Users/miguel/code/personal/Aphrodite/app/scripts/controllers/orderSummaryController.js",
+		"/Users/miguel/code/personal/Aphrodite/api/app.js",
+		"/Users/miguel/code/personal/Aphrodite/app/views/createOrder.html",
+		"/Users/miguel/code/personal/Aphrodite/bower.json",
+		"/Users/miguel/code/personal/Aphrodite/app/scripts/factories/productFactory.js",
+		"/Users/miguel/Desktop/test.html",
+		"/Users/miguel/code/personal/Aphrodite/api/routes/invoice.js",
+		"/Users/miguel/code/personal/LicenseMe/licenseme/app/factories/stateFactory.js",
+		"/Users/miguel/code/personal/LicenseMe/licenseme/app/app.js",
+		"/Users/miguel/code/personal/LicenseMe/licensemeservice/app.js",
+		"/Users/miguel/code/personal/Aphrodite/app/views/summary.html",
+		"/Users/miguel/code/personal/Aphrodite/aphrodite.sublime-workspace",
+		"/Users/miguel/code/personal/Aphrodite/api/routes/index.js",
+		"/Users/miguel/Downloads/sstc-saml1x-metadata.xsd",
+		"/Users/miguel/code/personal/Aphrodite/app/controllers/orderController.js",
+		"/Users/miguel/code/personal/Aphrodite/app/partials/createOrder.html",
+		"/Users/miguel/code/personal/Aphrodite/app/partials/summary.html",
+		"/Users/miguel/code/personal/Aphrodite/app/factories/productFactory.js",
+		"/Users/miguel/Library/Application Support/Sublime Text 3/Packages/User/Default (OSX).sublime-keymap",
+		"/Users/miguel/code/personal/Aphrodite/index.html",
+		"/Users/miguel/code/personal/Aphrodite/app/app.js",
+		"/Users/miguel/code/personal/Aphrodite/app/controllers/orderSummaryController.js",
+		"/Users/miguel/code/personal/Aphrodite/app/factories/orderEntry.js",
+		"/Users/miguel/code/personal/Aphrodite/app/factories/orderEntry",
+		"/Users/miguel/code/personal/Aphrodite/content/css/navbar-fixed-top.css",
+		"/Users/miguel/code/personal/Aphrodite/content/css/bootstrap_flatly.min.css",
+		"/Users/miguel/code/personal/Aphrodite/scripts/modernizr-latest-dev.js",
+		"/Users/miguel/code/personal/Aphrodite/scripts/angular.min.js",
+		"/Users/miguel/Downloads/vpnsetup.sh"
+	],
+	"find":
+	{
+		"height": 35.0
+	},
+	"find_in_files":
+	{
+		"height": 93.0,
+		"where_history":
+		[
+			"summary.html",
+			""
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"tab",
+			"connect",
+			"3000",
+			"SendProgressUpdate",
+			"tab",
+			"'",
+			"1",
+			"scripts/",
+			">\n",
+			"loadNpmTasks",
+			"'",
+			"</strong>",
+			"<strong>",
+			"calc",
+			"<",
+			"item",
+			">{{",
+			"\n                                        ",
+			"                                    </",
+			"label",
+			"legend",
+			",'",
+			"['",
+			"</label><label>",
+			"orderSummaryController",
+			"orderEntry.",
+			"clientInformation",
+			"server"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"",
+			"\"",
+			"",
+			"div",
+			", description: '",
+			"description: '",
+			"{itemNumber: '",
+			"orderEntry.clientInformation.",
+			"consultantInformation"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 1,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "index.html",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1061,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								850,
+								850
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"codeintel": true,
+							"codeintel_config":
+							{
+								"JavaScript":
+								{
+									"codeintel_max_recursive_dir_depth": 2,
+									"codeintel_scan_files_in_project": false,
+									"javascriptExtraPaths":
+									[
+									]
+								},
+								"PHP":
+								{
+									"codeintel_max_recursive_dir_depth": 5,
+									"codeintel_scan_files_in_project": false,
+									"phpExtraPaths":
+									[
+									]
+								},
+								"Python":
+								{
+									"env":
+									{
+									}
+								}
+							},
+							"codeintel_enabled_languages":
+							[
+								"JavaScript",
+								"Mason",
+								"XBL",
+								"XUL",
+								"RHTML",
+								"SCSS",
+								"Python",
+								"HTML",
+								"Ruby",
+								"Python3",
+								"XML",
+								"Sass",
+								"XSLT",
+								"Django",
+								"HTML5",
+								"Perl",
+								"CSS",
+								"Twig",
+								"Less",
+								"Smarty",
+								"Node.js",
+								"Tcl",
+								"TemplateToolkit",
+								"PHP"
+							],
+							"codeintel_live": true,
+							"codeintel_live_enabled_languages":
+							[
+								"JavaScript",
+								"Mason",
+								"XBL",
+								"XUL",
+								"RHTML",
+								"SCSS",
+								"Python",
+								"HTML",
+								"Ruby",
+								"Python3",
+								"XML",
+								"Sass",
+								"XSLT",
+								"Django",
+								"HTML5",
+								"Perl",
+								"CSS",
+								"Twig",
+								"Less",
+								"Smarty",
+								"Node.js",
+								"Tcl",
+								"TemplateToolkit",
+								"PHP"
+							],
+							"codeintel_max_recursive_dir_depth": 10,
+							"codeintel_scan_exclude_dir":
+							{
+								"JavaScript":
+								[
+									"/build/",
+									"/min/"
+								]
+							},
+							"codeintel_scan_files_in_project": true,
+							"codeintel_selected_catalogs":
+							[
+								"PyWin32",
+								"jQuery",
+								"Rails"
+							],
+							"codeintel_snippets": true,
+							"codeintel_syntax_map":
+							{
+								"Python Django": "Python"
+							},
+							"codeintel_tooltips": "popup",
+							"sublime_auto_complete": true,
+							"syntax": "Packages/HTML/HTML.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "src/app.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2059,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								998,
+								998
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"auto_name": "var Box = React.createClass({",
+							"bh_regions":
+							[
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"codeintel": true,
+							"codeintel_config":
+							{
+								"JavaScript":
+								{
+									"codeintel_max_recursive_dir_depth": 2,
+									"codeintel_scan_files_in_project": false,
+									"javascriptExtraPaths":
+									[
+									]
+								},
+								"PHP":
+								{
+									"codeintel_max_recursive_dir_depth": 5,
+									"codeintel_scan_files_in_project": false,
+									"phpExtraPaths":
+									[
+									]
+								},
+								"Python":
+								{
+									"env":
+									{
+									}
+								}
+							},
+							"codeintel_enabled_languages":
+							[
+								"JavaScript",
+								"Mason",
+								"XBL",
+								"XUL",
+								"RHTML",
+								"SCSS",
+								"Python",
+								"HTML",
+								"Ruby",
+								"Python3",
+								"XML",
+								"Sass",
+								"XSLT",
+								"Django",
+								"HTML5",
+								"Perl",
+								"CSS",
+								"Twig",
+								"Less",
+								"Smarty",
+								"Node.js",
+								"Tcl",
+								"TemplateToolkit",
+								"PHP"
+							],
+							"codeintel_live": true,
+							"codeintel_live_enabled_languages":
+							[
+								"JavaScript",
+								"Mason",
+								"XBL",
+								"XUL",
+								"RHTML",
+								"SCSS",
+								"Python",
+								"HTML",
+								"Ruby",
+								"Python3",
+								"XML",
+								"Sass",
+								"XSLT",
+								"Django",
+								"HTML5",
+								"Perl",
+								"CSS",
+								"Twig",
+								"Less",
+								"Smarty",
+								"Node.js",
+								"Tcl",
+								"TemplateToolkit",
+								"PHP"
+							],
+							"codeintel_max_recursive_dir_depth": 10,
+							"codeintel_scan_exclude_dir":
+							{
+								"JavaScript":
+								[
+									"/build/",
+									"/min/"
+								]
+							},
+							"codeintel_scan_files_in_project": true,
+							"codeintel_selected_catalogs":
+							[
+								"PyWin32",
+								"jQuery",
+								"Rails"
+							],
+							"codeintel_snippets": true,
+							"codeintel_syntax_map":
+							{
+								"Python Django": "Python"
+							},
+							"codeintel_tooltips": "popup",
+							"sublime_auto_complete": true,
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 265.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3964,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2815,
+								2893
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"auto_name": "/**",
+							"bh_regions":
+							[
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content"
+							],
+							"codeintel": true,
+							"codeintel_config":
+							{
+								"JavaScript":
+								{
+									"codeintel_max_recursive_dir_depth": 2,
+									"codeintel_scan_files_in_project": false,
+									"javascriptExtraPaths":
+									[
+									]
+								},
+								"PHP":
+								{
+									"codeintel_max_recursive_dir_depth": 5,
+									"codeintel_scan_files_in_project": false,
+									"phpExtraPaths":
+									[
+									]
+								},
+								"Python":
+								{
+									"env":
+									{
+									}
+								}
+							},
+							"codeintel_enabled_languages":
+							[
+								"JavaScript",
+								"Mason",
+								"XBL",
+								"XUL",
+								"RHTML",
+								"SCSS",
+								"Python",
+								"HTML",
+								"Ruby",
+								"Python3",
+								"XML",
+								"Sass",
+								"XSLT",
+								"Django",
+								"HTML5",
+								"Perl",
+								"CSS",
+								"Twig",
+								"Less",
+								"Smarty",
+								"Node.js",
+								"Tcl",
+								"TemplateToolkit",
+								"PHP"
+							],
+							"codeintel_live": true,
+							"codeintel_live_enabled_languages":
+							[
+								"JavaScript",
+								"Mason",
+								"XBL",
+								"XUL",
+								"RHTML",
+								"SCSS",
+								"Python",
+								"HTML",
+								"Ruby",
+								"Python3",
+								"XML",
+								"Sass",
+								"XSLT",
+								"Django",
+								"HTML5",
+								"Perl",
+								"CSS",
+								"Twig",
+								"Less",
+								"Smarty",
+								"Node.js",
+								"Tcl",
+								"TemplateToolkit",
+								"PHP"
+							],
+							"codeintel_max_recursive_dir_depth": 10,
+							"codeintel_scan_exclude_dir":
+							{
+								"JavaScript":
+								[
+									"/build/",
+									"/min/"
+								]
+							},
+							"codeintel_scan_files_in_project": true,
+							"codeintel_selected_catalogs":
+							[
+								"PyWin32",
+								"jQuery",
+								"Rails"
+							],
+							"codeintel_snippets": true,
+							"codeintel_syntax_map":
+							{
+								"Python Django": "Python"
+							},
+							"codeintel_tooltips": "popup",
+							"sublime_auto_complete": true,
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 613.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 23.0
+	},
+	"input":
+	{
+		"height": 31.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 100.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"project": "pulsereact.sublime-project",
+	"replace":
+	{
+		"height": 42.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+			[
+				"reach",
+				"ReactTutorial.html"
+			],
+			[
+				"sour",
+				"source.js"
+			],
+			[
+				"reportandup",
+				"Radar.Silverlight/Helper/ReportAndUploadServiceParameters.cs"
+			],
+			[
+				"reque",
+				"Radar.Silverlight/Helper/ReportRequestDto.cs"
+			],
+			[
+				"pdf",
+				"Radar.Web/ReportPDF/ReportPackagePDF.aspx.cs"
+			],
+			[
+				"packagepd",
+				"Radar.Web/ReportPDF/ReportPackagePDF-test.html"
+			],
+			[
+				"app.",
+				"src/app/app.config.js"
+			],
+			[
+				"ap",
+				"node2sqlserver/app.js"
+			],
+			[
+				"reportpackag",
+				"Radar.Web/ReportPDF/ReportPackagePDF.aspx.cs"
+			],
+			[
+				"reportpacka",
+				"Radar.Web/ReportPDF/ReportPackagePDF.aspx"
+			],
+			[
+				"",
+				"src/app/services/log.service.js"
+			],
+			[
+				"app.con",
+				"src/app/app.config.js"
+			],
+			[
+				"logs.con",
+				"src/app/logs/logs.controller.js"
+			],
+			[
+				"index",
+				"node_modules/browser-sync/index.js"
+			],
+			[
+				"di",
+				"QueryBuilder/QueryBuilderDirective.js"
+			],
+			[
+				"in",
+				"index.html"
+			],
+			[
+				"dir",
+				"QueryBuilder/QueryBuilderDirective.js"
+			],
+			[
+				"js",
+				"QueryBuilder/GroupBuilderDirective.js"
+			],
+			[
+				"a",
+				"app.js"
+			],
+			[
+				"dire",
+				"QueryBuilder/GroupBuilderDirective.js"
+			],
+			[
+				"par",
+				"QueryBuilder/QueryBuilderPartial.html"
+			],
+			[
+				"query",
+				"QueryBuilder/QueryBuilderDirective.js"
+			],
+			[
+				"to",
+				"src/app/layout/topnav.html"
+			],
+			[
+				"welc",
+				"src/app/welcome/welcome2.js"
+			],
+			[
+				"wel",
+				"src/app/welcome/welcome.js"
+			],
+			[
+				"inde",
+				"src/index.html"
+			],
+			[
+				"app",
+				"src/app/app.js"
+			],
+			[
+				"topn",
+				"src/app/layout/topnav.html"
+			],
+			[
+				"su",
+				"app/partials/summary.html"
+			],
+			[
+				"produ",
+				"app/factories/productFactory.js"
+			],
+			[
+				"order",
+				"app/controllers/orderController.js"
+			],
+			[
+				"cre",
+				"app/partials/createOrder.html"
+			],
+			[
+				"ind",
+				"index.html"
+			],
+			[
+				"html",
+				"app/partials/createOrder.html"
+			],
+			[
+				"summ",
+				"app/partials/summary.html"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": false,
+	"show_open_files": true,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 215.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+		"max_columns": 2
+	}
+}
