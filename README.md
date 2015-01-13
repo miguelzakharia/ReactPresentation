@@ -2,8 +2,11 @@
 
 ### Summary
 
-This project presents a simple log viewer built with React. Its sole purpose is to show some basics of React. Links and slides that
-go along with this demo can be found [here](https://bitly.com/bundles/miguelzakharia/5).
+This project presents a simple log viewer built with React. Its sole purpose is to show some basics of React.
+
+### Links and slides for more info
+
+[Here](https://bitly.com/bundles/miguelzakharia/5)
 
 ### Running this code
 
