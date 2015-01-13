@@ -53,7 +53,6 @@ var AppStore = assign({}, EventEmitter.prototype, {
     },
 
     emitChange: function() {
-        console.log("AppStore.emitChange: firing event");
         this.emit(CHANGE_EVENT);
     },
 

@@ -1,7 +1,4 @@
 var React = require("react");
-var Router = require("react-router");
-var routes = require("./app.routes.js");
+var LogsContainer = require("./components/LogsContainer.react.js");
 
-Router.run(routes, function (Handler) {
-  React.render(<Handler/>, document.body);
-});
+React.render(<LogsContainer/>, document.body);

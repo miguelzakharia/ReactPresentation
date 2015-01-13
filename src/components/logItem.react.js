@@ -1,8 +1,6 @@
 var React = require("react");
-var Navigation = require("react-router").Navigation;
 
 var LogItem = React.createClass({
-	mixins: [Navigation],
 	getInitialState: function(){
 		return {
 			isVisible: false
